@@ -2,7 +2,7 @@ name: Rename .txt File with Timestamp
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/1 * * * *'
 
 jobs:
   rename-file:
