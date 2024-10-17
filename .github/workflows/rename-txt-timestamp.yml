@@ -1,0 +1,35 @@
+name: Rename .txt File with Timestamp
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+
+jobs:
+  rename-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get current timestamp
+        id: timestamp
+        run: echo "TIMESTAMP=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+
+      - name: Rename .txt file
+        run: |
+          FILE=$(ls *.txt)
+          if [ -f "$FILE" ]; then
+            mv "$FILE" "${FILE%.txt}-${{ env.TIMESTAMP }}.txt"
+          else
+            echo "No .txt file found!"
+          fi
+
+      - name: Commit and push changes
+        env:
+          TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Renamed .txt file to include timestamp"
+          git push https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}.git
