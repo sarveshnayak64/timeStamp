@@ -1,11 +1,11 @@
-name: Rename .txt File with Timestamp
+name: Create New .txt File with Timestamp
 
 on:
   schedule:
-    - cron: '*/1 * * * *'
+    - cron: '*/10 * * * *' # Runs every 10 minutes
 
 jobs:
-  rename-file:
+  create-file:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -15,15 +15,20 @@ jobs:
         id: timestamp
         run: echo "TIMESTAMP=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Rename .txt file
+      - name: Create new .txt file with timestamp
         run: |
-          FILE=$(ls *.txt)
-          if [ -f "$FILE" ]; then
-            mv "$FILE" "${FILE%.txt}-${{ env.TIMESTAMP }}.txt"
-          else
-            echo "No .txt file found!"
-          fi
+          NEW_FILE="timestamp-${{ env.TIMESTAMP }}.txt"
+          echo "This is a new file created on ${TIMESTAMP}" > $NEW_FILE
+          echo "Created file: $NEW_FILE"
 
+      # - name: Rename .txt file
+      #   run: |
+      #     FILE=$(ls *.txt)
+      #     if [ -f "$FILE" ]; then
+      #       mv "$FILE" "${FILE%.txt}-${{ env.TIMESTAMP }}.txt"
+      #     else
+      #       echo "No .txt file found!"
+      #     fi
       - name: Debug token and repository info
         run: |
           # Log the repository for verification
@@ -46,7 +51,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Renamed .txt file to include timestamp"
+          git commit -m "Created new file with timestamp"
           echo "Pushing changes..."
           
           # Log the full URL for verification
